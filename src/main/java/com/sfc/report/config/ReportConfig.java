@@ -15,26 +15,6 @@ public class ReportConfig {
     @Value("${report.sqlpath}")
     private String sqlpath;
     /**
-     * 文件路径
-     */
-    @Value("${report.filepath}")
-    private String filepath;
-    /**
-     * 产品代码
-     */
-    @Value("${report.product}")
-    private String product;
-    /**
-     * 开始日期
-     */
-    @Value("${report.beginDate}")
-    private String beginDate;
-    /**
-     * 结束日期
-     */
-    @Value("${report.endDate}")
-    private String endDate;
-    /**
      * 文件名称
      */
     @Value("${report.filename}")

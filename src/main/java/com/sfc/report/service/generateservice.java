@@ -29,33 +29,19 @@ public class generateservice {
      * reportservice
      */
     public void reportservice(String product, String beginDate, String endDate, HttpServletResponse response){
-        String sqlpath=reportConfig.getSqlpath();
-        //String bDate=" '"+beginDate+"' ";
-        //String eDate=" '"+endDate+"' ";
-        String excelfilename=reportConfig.getFilename();
         List<String> filenames=null;
-        if(sqlpath!=null) {
-            filenames = getsqlfilename(sqlpath);
+        if(reportConfig.getSqlpath()!=null) {
+            filenames = getsqlfilename(reportConfig.getSqlpath());
         }
         HSSFWorkbook workbook = new HSSFWorkbook();
         for(String filename: filenames){
             String sql=null;
-            try{
-                sql = readSqlFile(filename);
-               // sql = sql.replaceAll(reportConfig.getProduct(), product);
-                //sql = sql.replaceAll(reportConfig.getBeginDate(), beginDate);
-                //sql = sql.replaceAll(reportConfig.getEndDate(), endDate);
-                //String ss=Matcher.quoteReplacement("${PFID}");
-                sql = sql.replace("${PFID}", product)
-                         .replace("${FBEGINDATE}", beginDate)
-                         .replace("${FENDDATE}", endDate );
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-            //System.out.println(sql);
+            sql = readSqlFile(filename);
+            sql = sql.replace("${PFID}", product)
+                     .replace("${FBEGINDATE}", beginDate)
+                     .replace("${FENDDATE}", endDate );
             String sheetename=filename.substring(filename.lastIndexOf("\\")+1);
-            //sheet名与sql文件名一致
-            sheetename=sheetename.substring(0,sheetename.indexOf("."));
+            sheetename=sheetename.substring(0,sheetename.indexOf("."));//sheet名与sql文件名一致
             System.out.println(sheetename);
             HSSFSheet sheet = workbook.createSheet(sheetename);
             List<List<Object>> report=null;
@@ -63,22 +49,16 @@ public class generateservice {
                 report = excuteSql(sql);
             }catch(Exception e){
                 e.printStackTrace();
-                System.out.println(sql);
             }
-
             if(report!=null&&report.size()>0) {
                 saveToExcel(report, sheetename, response, workbook,  sheet);
             }
-
         }
         try {
-            //清空response
-            response.reset();
-            //设置response的Header
-            response.addHeader("Content-Disposition", "attachment;filename= "+excelfilename+".xls");
+            response.reset();//清空response
+            response.addHeader("Content-Disposition", "attachment;filename= "+reportConfig.getFilename()+".xls");
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
             response.setContentType("application/octet-stream;charset=UTF-8");
-            //将excel写入到输出流中
             workbook.write(os);
             os.flush();
             os.close();
@@ -88,7 +68,6 @@ public class generateservice {
 
 
     }
-
 
     /**
      * 遍历sql文件
@@ -103,7 +82,6 @@ public class generateservice {
                 if(fileName.endsWith(".sql")){
                     filenames.add(files[i].getAbsolutePath());
                 }
-
             }
 
         }
@@ -114,8 +92,6 @@ public class generateservice {
      * 保存excel文件
      */
     public void saveToExcel(List<List<Object>> result, String filename, HttpServletResponse response, HSSFWorkbook workbook , HSSFSheet sheet){
-
-
         for (int i = 0; i < result.size(); i++) {
             // 一个List对象是一个Map，一行数据，一个Map对象对应一行里的一条数据
             List<Object> tableMap = result.get(i);
@@ -135,14 +111,12 @@ public class generateservice {
 
     }
 
-
     /**
      * 执行sql 获取二维数组
      */
     public List<List<Object>> excuteSql(String sql) {
         List<List<Object>> result = new ArrayList<>();
         List<Map<String, Object>> tempData = reportMapper.generate(sql);
-
         if(tempData.size()<=0) {
             try{
             Class.forName(reportConfig.getDriver());
@@ -169,7 +143,6 @@ public class generateservice {
             Header = tempData.get(0);
             List<Object> HeaderList = new ArrayList<>();
         if(Header!=null) {
-
             for (String keyName : Header.keySet()) {
                 HeaderList.add(keyName);
             }
@@ -219,7 +192,6 @@ public class generateservice {
      * 产品参数化
      */
     public String productParam(String product){
-
         if("is not null".equalsIgnoreCase(product)){
             return " is not null ";
         } else{
