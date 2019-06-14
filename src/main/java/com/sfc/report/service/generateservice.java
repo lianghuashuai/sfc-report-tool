@@ -201,7 +201,7 @@ public class generateservice {
         BufferedReader br=null;
         try{
         is = new FileInputStream(fileName);
-         br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+         br = new BufferedReader(new InputStreamReader(is, "GB2312"));
         String temp;
         while ((temp = br.readLine()) != null) {
             sql.append(temp).append("\n");
@@ -230,9 +230,9 @@ public class generateservice {
                     productParam.append("'").append(productVarietyArr[i]).append("',");
                 }
             }
-            String sql = productParam.substring(0, productParam.lastIndexOf(","));
-            sql = " in (" + sql + ") ";
-            return sql;
+            String products = productParam.substring(0, productParam.lastIndexOf(","));
+            products = " in (" + products + ") ";
+            return product;
         }
     }
 
